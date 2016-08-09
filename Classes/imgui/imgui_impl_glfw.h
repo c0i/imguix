@@ -13,6 +13,7 @@ IMGUI_API void        ImGui_ImplGlfw_NewFrame();
 // Use if you want to reset your rendering device without losing ImGui state.
 IMGUI_API void        ImGui_ImplGlfw_InvalidateDeviceObjects();
 IMGUI_API bool        ImGui_ImplGlfw_CreateDeviceObjects();
+IMGUI_API bool        ImGui_ImplIOS_CreateFontsTexture();
 
 // GLFW callbacks (installed by default if you enable 'install_callbacks' during initialization)
 // Provided here if you want to chain callbacks.
