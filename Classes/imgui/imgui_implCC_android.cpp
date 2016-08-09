@@ -54,7 +54,10 @@ void ImGui_ImplCC_RenderDrawLists(ImDrawData* draw_data)
     GLint last_array_buffer; glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
     GLint last_element_array_buffer; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &last_element_array_buffer);
 
-    //GLint last_viewport[4]; glGetIntegerv(GL_VIEWPORT, last_viewport);
+    GLint last_blend_equation_rgb; glGetIntegerv(GL_BLEND_EQUATION_RGB, &last_blend_equation_rgb);
+    GLint last_blend_equation_alpha; glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &last_blend_equation_alpha);
+
+    GLint last_viewport[4]; glGetIntegerv(GL_VIEWPORT, last_viewport);
 
     GLboolean last_enable_blend = glIsEnabled(GL_BLEND);
     GLboolean last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
@@ -85,10 +88,10 @@ void ImGui_ImplCC_RenderDrawLists(ImDrawData* draw_data)
 
        // Render command lists
     glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
+
     glEnableVertexAttribArray(g_AttribLocationPosition);
     glEnableVertexAttribArray(g_AttribLocationUV);
     glEnableVertexAttribArray(g_AttribLocationColor);
-
     #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
     glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
     glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
@@ -122,22 +125,19 @@ void ImGui_ImplCC_RenderDrawLists(ImDrawData* draw_data)
         }
     }
 
-    // Restore modified GL state
-    glDisableVertexAttribArray(g_AttribLocationPosition);
-    glDisableVertexAttribArray(g_AttribLocationUV);
-    glDisableVertexAttribArray(g_AttribLocationColor);
-
     glUseProgram(last_program);
     glBindTexture(GL_TEXTURE_2D, last_texture);
     glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, last_element_array_buffer);
+
+    glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
 
     if (last_enable_blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
     if (last_enable_cull_face) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
     if (last_enable_depth_test) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
     if (last_enable_scissor_test) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
 
-    //glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
+    glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
 }
 
 static const char* ImGui_ImplCC_GetClipboardText()
@@ -183,7 +183,7 @@ bool ImGui_ImplCC_CreateDeviceObjects()
         "varying vec4 Frag_Color;\n"
         "void main()\n"
         "{\n"
-        "   gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV.st);\n"
+        "   gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV);\n"
         "}\n";
 
     g_ShaderHandle = glCreateProgram();
@@ -243,15 +243,6 @@ bool ImGui_ImplCC_CreateDeviceObjects()
     glGenBuffers(1, &g_ElementsHandle);
 
     glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-    glEnableVertexAttribArray(g_AttribLocationPosition);
-    glEnableVertexAttribArray(g_AttribLocationUV);
-    glEnableVertexAttribArray(g_AttribLocationColor);
-
-#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
-    glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
-    glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
-    glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
-#undef OFFSETOF
 
     // Build texture atlas
     ImGuiIO& io = ImGui::GetIO();
@@ -325,8 +316,7 @@ void ImGui_ImplCC_NewFrame()
     Size Fsize = director->getOpenGLView()->getFrameSize();
     Size Vsize = director->getOpenGLView()->getVisibleSize();
     io.DisplaySize = ImVec2(Vsize.width, Vsize.height);
-    io.DisplayFramebufferScale = ImVec2(Vsize.width > 0 ? ((float)Fsize.width / Vsize.width) : 0, 
-        Vsize.height > 0 ? ((float)Fsize.height / Vsize.height) : 0);
+    io.DisplayFramebufferScale = ImVec2(Vsize.width > 0 ? ((float)Fsize.width / Vsize.width) : 0,Vsize.height > 0 ? ((float)Fsize.height / Vsize.height) : 0);
     // Setup time step
     double current_time = director->getDeltaTime();
     io.DeltaTime = current_time;
