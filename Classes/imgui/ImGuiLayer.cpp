@@ -28,6 +28,9 @@ bool ImGuiLayer::init()
 	//----------------------------------------
 	// init imgui cc
     //setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_COLOR));
+	this->setCascadeColorEnabled(true);
+	this->setCascadeOpacityEnabled(true);
+	this->setOpacity(150);
 	//----------------------------------------
 	// convert touch to mouse
 
@@ -62,7 +65,7 @@ void ImGuiLayer::visit(cocos2d::Renderer *renderer, const cocos2d::Mat4 &parentT
 
 void ImGuiLayer::onDraw()
 {
-    //glUseProgram(0);
+    glUseProgram(0);
 
 	//----- draw imgui
 	ImGuiIO& io = ImGui::GetIO();
@@ -76,5 +79,5 @@ void ImGuiLayer::onDraw()
 
     ImGui::Render();
 
-	//glUseProgram(1);
+	glUseProgram(1);
 }
