@@ -248,6 +248,7 @@ bool ImGui_ImplGlfw_CreateDeviceObjects()
 	glGenVertexArrays(1, &g_VaoHandle);
 	glBindVertexArray(g_VaoHandle);
 	glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
+
 	glEnableVertexAttribArray(g_AttribLocationPosition);
 	glEnableVertexAttribArray(g_AttribLocationUV);
 	glEnableVertexAttribArray(g_AttribLocationColor);
