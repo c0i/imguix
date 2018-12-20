@@ -136,11 +136,23 @@ public:
         }
     }
 
+	static void onGLFWWindowFocusCallback(GLFWwindow* window, int focused)
+	{
+		if (_view)
+		{
+			_view->onGLFWWindowFocusCallback(window, focused);
+		}
+	}
+
 private:
     static IMGUIGLViewImpl* _view;
 };
 
 IMGUIGLViewImpl* GLFWEventHandler::_view = nullptr;
+
+const std::string IMGUIGLViewImpl::EVENT_WINDOW_RESIZED = "glview_window_resized";
+const std::string IMGUIGLViewImpl::EVENT_WINDOW_FOCUSED = "glview_window_focused";
+const std::string IMGUIGLViewImpl::EVENT_WINDOW_UNFOCUSED = "glview_window_unfocused";
 
 ////////////////////////////////////////////////////
 
@@ -321,26 +333,31 @@ IMGUIGLViewImpl::~IMGUIGLViewImpl()
     GLFWEventHandler::setGLViewImpl(nullptr);
     glfwTerminate();
 }
-
 IMGUIGLViewImpl* IMGUIGLViewImpl::create(const std::string& viewName)
 {
+	return IMGUIGLViewImpl::create(viewName, false);
+}
+
+
+IMGUIGLViewImpl* IMGUIGLViewImpl::create(const std::string& viewName, bool resizable)
+{
     auto ret = new (std::nothrow) IMGUIGLViewImpl;
-    if(ret && ret->initWithRect(viewName, Rect(0, 0, 960, 640), 1)) {
+    if(ret && ret->initWithRect(viewName, Rect(0, 0, 960, 640), 1, resizable)) {
         ret->autorelease();
         return ret;
     }
-
+	CC_SAFE_DELETE(ret);
     return nullptr;
 }
 
-IMGUIGLViewImpl* IMGUIGLViewImpl::createWithRect(const std::string& viewName, Rect rect, float frameZoomFactor)
+IMGUIGLViewImpl* IMGUIGLViewImpl::createWithRect(const std::string& viewName, Rect rect, float frameZoomFactor, bool resizable)
 {
     auto ret = new (std::nothrow) IMGUIGLViewImpl;
-    if(ret && ret->initWithRect(viewName, rect, frameZoomFactor)) {
+    if(ret && ret->initWithRect(viewName, rect, frameZoomFactor, resizable)) {
         ret->autorelease();
         return ret;
     }
-
+	CC_SAFE_DELETE(ret);
     return nullptr;
 }
 
@@ -351,7 +368,7 @@ IMGUIGLViewImpl* IMGUIGLViewImpl::createWithFullScreen(const std::string& viewNa
         ret->autorelease();
         return ret;
     }
-
+	CC_SAFE_DELETE(ret);
     return nullptr;
 }
 
@@ -362,17 +379,17 @@ IMGUIGLViewImpl* IMGUIGLViewImpl::createWithFullScreen(const std::string& viewNa
         ret->autorelease();
         return ret;
     }
-    
+	CC_SAFE_DELETE(ret);
     return nullptr;
 }
 
-bool IMGUIGLViewImpl::initWithRect(const std::string& viewName, Rect rect, float frameZoomFactor)
+bool IMGUIGLViewImpl::initWithRect(const std::string& viewName, Rect rect, float frameZoomFactor, bool resizable)
 {
     setViewName(viewName);
 
     _frameZoomFactor = frameZoomFactor;
-
-    glfwWindowHint(GLFW_RESIZABLE,GL_TRUE);
+	glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
+    //glfwWindowHint(GLFW_RESIZABLE,GL_TRUE);
     glfwWindowHint(GLFW_RED_BITS,_glContextAttrs.redBits);
     glfwWindowHint(GLFW_GREEN_BITS,_glContextAttrs.greenBits);
     glfwWindowHint(GLFW_BLUE_BITS,_glContextAttrs.blueBits);
@@ -384,6 +401,19 @@ bool IMGUIGLViewImpl::initWithRect(const std::string& viewName, Rect rect, float
     int neeHeight = rect.size.height * _frameZoomFactor;
 
     _mainWindow = glfwCreateWindow(needWidth, neeHeight, _viewName.c_str(), _monitor, nullptr);
+
+	if (_mainWindow == nullptr)
+	{
+		std::string message = "Can't create window";
+		if (!_glfwError.empty())
+		{
+			message.append("\nMore info: \n");
+			message.append(_glfwError);
+		}
+
+		MessageBox(message.c_str(), "Error launch application");
+		return false;
+	}
 
     /*
     *  Note that the created window and context may differ from what you requested,
@@ -408,16 +438,16 @@ bool IMGUIGLViewImpl::initWithRect(const std::string& viewName, Rect rect, float
 
     glfwMakeContextCurrent(_mainWindow);
 
-    glfwSetMouseButtonCallback(_mainWindow, GLFWEventHandler::onGLFWMouseCallBack);
-    glfwSetCursorPosCallback(_mainWindow, GLFWEventHandler::onGLFWMouseMoveCallBack);
-    glfwSetScrollCallback(_mainWindow, GLFWEventHandler::onGLFWMouseScrollCallback);
-    glfwSetCharCallback(_mainWindow, GLFWEventHandler::onGLFWCharCallback);
-    glfwSetKeyCallback(_mainWindow, GLFWEventHandler::onGLFWKeyCallback);
-    glfwSetWindowPosCallback(_mainWindow, GLFWEventHandler::onGLFWWindowPosCallback);
-    glfwSetFramebufferSizeCallback(_mainWindow, GLFWEventHandler::onGLFWframebuffersize);
-    glfwSetWindowSizeCallback(_mainWindow, GLFWEventHandler::onGLFWWindowSizeFunCallback);
-    glfwSetWindowIconifyCallback(_mainWindow, GLFWEventHandler::onGLFWWindowIconifyCallback);
-    glfwSetWindowSizeCallback(_mainWindow, GLFWEventHandler::onWindowResizeCallback);
+	glfwSetMouseButtonCallback(_mainWindow, GLFWEventHandler::onGLFWMouseCallBack);
+	glfwSetCursorPosCallback(_mainWindow, GLFWEventHandler::onGLFWMouseMoveCallBack);
+	glfwSetScrollCallback(_mainWindow, GLFWEventHandler::onGLFWMouseScrollCallback);
+	glfwSetCharCallback(_mainWindow, GLFWEventHandler::onGLFWCharCallback);
+	glfwSetKeyCallback(_mainWindow, GLFWEventHandler::onGLFWKeyCallback);
+	glfwSetWindowPosCallback(_mainWindow, GLFWEventHandler::onGLFWWindowPosCallback);
+	glfwSetFramebufferSizeCallback(_mainWindow, GLFWEventHandler::onGLFWframebuffersize);
+	glfwSetWindowSizeCallback(_mainWindow, GLFWEventHandler::onGLFWWindowSizeFunCallback);
+	glfwSetWindowIconifyCallback(_mainWindow, GLFWEventHandler::onGLFWWindowIconifyCallback);
+	glfwSetWindowFocusCallback(_mainWindow, GLFWEventHandler::onGLFWWindowFocusCallback);
 
     setFrameSize(rect.size.width, rect.size.height);
 
@@ -453,7 +483,7 @@ bool IMGUIGLViewImpl::initWithFullScreen(const std::string& viewName)
         return false;
 
     const GLFWvidmode* videoMode = glfwGetVideoMode(_monitor);
-    return initWithRect(viewName, Rect(0, 0, videoMode->width, videoMode->height), 1.0f);
+    return initWithRect(viewName, Rect(0, 0, videoMode->width, videoMode->height), 1.0f, false);
 }
 
 bool IMGUIGLViewImpl::initWithFullscreen(const std::string &viewname, const GLFWvidmode &videoMode, GLFWmonitor *monitor)
@@ -469,7 +499,7 @@ bool IMGUIGLViewImpl::initWithFullscreen(const std::string &viewname, const GLFW
     glfwWindowHint(GLFW_BLUE_BITS, videoMode.blueBits);
     glfwWindowHint(GLFW_GREEN_BITS, videoMode.greenBits);
     
-    return initWithRect(viewname, Rect(0, 0, videoMode.width, videoMode.height), 1.0f);
+    return initWithRect(viewname, Rect(0, 0, videoMode.width, videoMode.height), 1.0f, false);
 }
 
 bool IMGUIGLViewImpl::isOpenGLReady()
@@ -678,6 +708,19 @@ void IMGUIGLViewImpl::onGLFWMouseCallBack(GLFWwindow* window, int button, int ac
     }
 }
 
+
+void IMGUIGLViewImpl::onGLFWWindowFocusCallback(GLFWwindow* /*window*/, int focused)
+{
+	if (focused == GL_TRUE)
+	{
+		Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(IMGUIGLViewImpl::EVENT_WINDOW_FOCUSED, nullptr);
+	}
+	else
+	{
+		Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(IMGUIGLViewImpl::EVENT_WINDOW_UNFOCUSED, nullptr);
+	}
+}
+
 void IMGUIGLViewImpl::onGLFWMouseMoveCallBack(GLFWwindow* window, double x, double y)
 {
     _mouseX = (float)x;
@@ -794,11 +837,24 @@ void IMGUIGLViewImpl::onGLFWframebuffersize(GLFWwindow* window, int w, int h)
 
 void IMGUIGLViewImpl::onGLFWWindowSizeFunCallback(GLFWwindow *window, int width, int height)
 {
-    if (_resolutionPolicy != ResolutionPolicy::UNKNOWN)
+    /*if (_resolutionPolicy != ResolutionPolicy::UNKNOWN)
     {
         updateDesignResolutionSize();
         Director::getInstance()->setViewport();
-    }
+    }*/
+
+	if (width && height && _resolutionPolicy != ResolutionPolicy::UNKNOWN)
+	{
+		Size baseDesignSize = _designResolutionSize;
+		ResolutionPolicy baseResolutionPolicy = _resolutionPolicy;
+
+		int frameWidth = width / _frameZoomFactor;
+		int frameHeight = height / _frameZoomFactor;
+		setFrameSize(frameWidth, frameHeight);
+		setDesignResolutionSize(baseDesignSize.width, baseDesignSize.height, baseResolutionPolicy);
+		Director::getInstance()->setViewport();
+		Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(IMGUIGLViewImpl::EVENT_WINDOW_RESIZED, nullptr);
+	}
 }
 
 void IMGUIGLViewImpl::onGLFWWindowIconifyCallback(GLFWwindow* window, int iconified)
