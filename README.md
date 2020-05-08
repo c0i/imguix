@@ -1,7 +1,7 @@
 ## Cocos2d-x-3.17.1 with imgui 1.7
 
 1. Cocos2d-x is the engine: [https://github.com/cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x)
-2. UI is rendered with Dear ImGui[https://github.com/ocornut/imgui](https://github.com/ocornut/imgui)
+2. UI is rendered with Dear ImGui: [https://github.com/ocornut/imgui](https://github.com/ocornut/imgui)
 
 
 ![screen](imguix.png)
@@ -14,14 +14,14 @@
 
 
   ```c++
-// include headers
-#include "CCImGuiLayer.h"
+  // include headers
+  #include "CCImGuiLayer.h"
   ```
 
   ```c++
-// add ImGUI layer on top. Example:
-// https://github.com/c0i/imguix/blob/master/Classes/AppDelegate.cpp#L56
-ImGuiLayer::createAndKeepOnTop();
+  // add ImGUI layer on top. Example:
+  // https://github.com/c0i/imguix/blob/master/Classes/AppDelegate.cpp#L56
+  ImGuiLayer::createAndKeepOnTop();
   ```
 
 ## How to use
