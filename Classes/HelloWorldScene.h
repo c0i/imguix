@@ -25,6 +25,8 @@ public:
     CREATE_FUNC(HelloWorld);
     
     void createSpineTest();
+
+    void testImGui();
     
     void testSVG();
 protected:
