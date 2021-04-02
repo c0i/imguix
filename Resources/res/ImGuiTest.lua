@@ -6,7 +6,7 @@ local function createDefaultWindow()
 end
 
 local f = 4.9
-local color = {100, 200, 300}
+local color = {100/255, 200/255, 300/255}
 local function createToolWindow()
     ImGui.Begin('Lua Window')
     if ImGui.Button('Lua Button') then
