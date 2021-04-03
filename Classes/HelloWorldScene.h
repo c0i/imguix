@@ -29,6 +29,9 @@ public:
     void testImGui();
     
     void testSVG();
+
+    void registerCocos2dx();
+
 protected:
     spAtlas* _atlas = nullptr;
     spAttachmentLoader* _attachmentLoader = nullptr;

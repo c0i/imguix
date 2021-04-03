@@ -1,4 +1,13 @@
 print('hellllo from lua')
+local resRootPath = cc.FileUtils:getInstance():getDefaultResourceRootPath()
+print('res root:'..resRootPath)
+print(os.time())
+
+package.path = package.path..string.format('%s/?.lua', resRootPath)..string.format(';%s/res/?.lua', resRootPath)
+print(package.path)
+
+
+require('functions')
 
 local function createDefaultWindow()
     ImGui.Separator()
@@ -47,3 +56,5 @@ ImGuiDraw(function ( )
     ImGui.End()
 
 end)
+
+dump(ImGui)

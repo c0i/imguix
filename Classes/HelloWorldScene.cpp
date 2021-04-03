@@ -112,6 +112,8 @@ bool HelloWorld::init()
         CCLOG("cxxfun");
     };
 
+    registerCocos2dx();
+
     CCLOG("> sol2");
     _luaState.script("print('bark bark bark!')");
     CCLOG("> sol2 >");
@@ -234,4 +236,14 @@ void HelloWorld::testSVG()
     auto scaleSeq = Sequence::createWithTwoActions(ScaleTo::create(duration, 3),
                                                    ScaleTo::create(duration, 0.5));
     svgSprite->runAction(RepeatForever::create(scaleSeq));
+}
+
+void HelloWorld::registerCocos2dx()
+{
+    auto cc = _luaState.create_table("cc");
+    cc.new_usertype<FileUtils>(
+        "FileUtils",
+        "getInstance", &FileUtils::getInstance,
+        "getDefaultResourceRootPath", &FileUtils::getDefaultResourceRootPath
+        );
 }
