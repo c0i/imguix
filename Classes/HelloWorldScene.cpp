@@ -7,6 +7,7 @@
 USING_NS_CC;
 using namespace spine;
 
+#define SOL_IMGUI_IMPLEMENTATION
 #include "ImGuiExt/sol_imgui.h"
 
 static bool show_test_window = true;

@@ -9,6 +9,13 @@
 
 namespace sol_ImGui
 {
+    inline void Init(sol::state_view& lua);
+};
+
+#ifdef SOL_IMGUI_IMPLEMENTATION
+
+namespace sol_ImGui
+{
     // Windows
     inline bool Begin(const std::string &name) { return ImGui::Begin(name.c_str()); }
     inline std::tuple<bool, bool> Begin(const std::string &name, bool open)
@@ -2915,3 +2922,5 @@ namespace sol_ImGui
 #pragma endregion Clipboard Utilities
     }
 }
+
+#endif // SOL_IMGUI_IMCOMPLATE
