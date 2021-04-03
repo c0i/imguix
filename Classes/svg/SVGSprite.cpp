@@ -24,6 +24,7 @@ bool SVGSprite::init(std::string path, float scale, std::string unit, float dpi)
 	Texture2D* texture = TextureCache::getInstance()->getTextureForKey(os.str());
 	if(texture != nullptr) return Sprite::initWithTexture(texture);
 	else {
+		path = FileUtils::getInstance()->fullPathForFilename(path);
 		NSVGimage *image = NULL;
 		NSVGrasterizer *rast = NULL;
 		unsigned char* img = NULL;
@@ -31,7 +32,7 @@ bool SVGSprite::init(std::string path, float scale, std::string unit, float dpi)
 		//--- parse svg from file
 		image = nsvgParseFromFile(path.c_str(), unit.c_str(), dpi);
 		if (image == NULL) {
-			log("Could not open SVG image.\n");
+			log("Could not open SVG image(%s).\n", path.c_str());
 			nsvgDeleteRasterizer(rast);
 			nsvgDelete(image);
 			return false;
