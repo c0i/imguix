@@ -7,8 +7,10 @@
 
 USING_NS_CC;
 //
-AppDelegate::AppDelegate() {
-
+AppDelegate::AppDelegate() 
+{
+    freopen("debug.log", "w", stdout);
+    freopen("debug.log", "w+", stderr);
 }
 
 AppDelegate::~AppDelegate() 
@@ -44,6 +46,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     director->setAnimationInterval(1.0 / 60);
 
     // add search paths (starting from inside Resources) here
+    FileUtils::getInstance()->addSearchPath("Resources");
+    FileUtils::getInstance()->addSearchPath("Resources/res");
     FileUtils::getInstance()->addSearchPath("res");
 
     // create a scene. it's an autorelease object
