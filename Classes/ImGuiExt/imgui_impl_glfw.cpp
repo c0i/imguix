@@ -109,6 +109,7 @@ extern void glfwSetIMEPos(int x, int y);
 }
 #endif
 
+#include "CCIMGUI.h"
 // set IME global position
 static void ImGui_ImplMac_SetImeInputPos(ImGuiViewport* viewport, ImVec2 pos)
 {
