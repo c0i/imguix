@@ -177,7 +177,7 @@ void HelloWorld::createSpineTest()
                                        RandomHelper::random_int(xMin, xMax),
                                        RandomHelper::random_int(yMin, yMax)
                                        ));
-        skeletonNode->setScale(0.8);
+        skeletonNode->setScale(0.8f);
         addChild(skeletonNode);
     }
 }
@@ -195,6 +195,14 @@ void HelloWorld::testImGui()
             if (ImGui::Button("Test Window")) show_test_window ^= 1;
             if (ImGui::Button("Another Window")) show_another_window ^= 1;
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+            // 中文输入法测试
+            if (CCIMGUI::getInstance()->chineseFont)
+                ImGui::PushFont(CCIMGUI::getInstance()->chineseFont);
+            static char buf[32] = u8"Hello，世界！";
+            ImGui::InputText("string", buf, IM_ARRAYSIZE(buf));
+            if (CCIMGUI::getInstance()->chineseFont)
+                ImGui::PopFont();
         }
 
         // 2. Show another simple window, this time using an explicit Begin/End pair

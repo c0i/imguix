@@ -99,6 +99,10 @@ bool ImGuiLayer::init()
     setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_COLOR));
 #endif
 
+    auto fontPath = FileUtils::getInstance()->fullPathForFilename("font/cfk.ttf");
+    io.Fonts->AddFontDefault();
+    CCIMGUI::getInstance()->chineseFont = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 20.0f, NULL, io.Fonts->GetGlyphRangesChineseSimplifiedCommon()); // io.Fonts->GetGlyphRangesChineseFull()
+
 	// events
     auto listener = EventListenerTouchOneByOne::create();
     listener->setSwallowTouches(true);

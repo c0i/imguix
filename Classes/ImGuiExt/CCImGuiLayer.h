@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cocos2d.h"
-
 USING_NS_CC;
 
 class ImGuiLayer : public cocos2d::Layer
@@ -21,7 +20,6 @@ public:
 
     // implement the "static create()" method manually
     CREATE_FUNC(ImGuiLayer);
-
 private:
 #if COCOS2D_VERSION < 0x00040000
     CustomCommand _command;
