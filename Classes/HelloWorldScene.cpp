@@ -207,8 +207,8 @@ void HelloWorld::testImGui()
             //
             if (CCIMGUI::getInstance()->chineseFont)
                 ImGui::PushFont(CCIMGUI::getInstance()->chineseFont);
-            static char buf[32] = "Hello，世界";
-            ImGui::InputText("string", buf, IM_ARRAYSIZE(buf));
+            static char buf[32] = "Hello";
+            ImGui::InputText("str中文ing", buf, IM_ARRAYSIZE(buf));
             if (CCIMGUI::getInstance()->chineseFont)
                 ImGui::PopFont();
         }

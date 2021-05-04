@@ -99,6 +99,7 @@ public:
     bool imageButton(const std::string& fn, int w = -1, int h = -1);
 
     ImFont* chineseFont = nullptr;
+    int chineseFontSize = 20;
 private:
     bool isShowSetupStyle = false;
     void displaySetupStyle();

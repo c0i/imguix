@@ -113,7 +113,8 @@ extern void glfwSetIMEPos(int x, int y);
 static void ImGui_ImplMac_SetImeInputPos(ImGuiViewport* viewport, ImVec2 pos)
 {
     CGSize frame = [[NSScreen mainScreen] frame].size;
-    glfwSetIMEPos(pos.x, frame.height - pos.y - ImGui::GetFontSize());
+    float fontSize = CCIMGUI::getInstance()->chineseFontSize;
+    glfwSetIMEPos(pos.x, frame.height - pos.y - fontSize);
 }
 #endif // #if __APPLE__
 

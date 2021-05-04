@@ -101,7 +101,8 @@ bool ImGuiLayer::init()
 
     auto fontPath = FileUtils::getInstance()->fullPathForFilename("font/cfk.ttf");
     io.Fonts->AddFontDefault();
-    CCIMGUI::getInstance()->chineseFont = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 20.0f, NULL, io.Fonts->GetGlyphRangesChineseSimplifiedCommon()); // io.Fonts->GetGlyphRangesChineseFull()
+    float fontSize = CCIMGUI::getInstance()->chineseFontSize;
+    CCIMGUI::getInstance()->chineseFont = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), fontSize, NULL, io.Fonts->GetGlyphRangesChineseSimplifiedCommon()); // io.Fonts->GetGlyphRangesChineseFull()
 
 	// events
     auto listener = EventListenerTouchOneByOne::create();
