@@ -75,13 +75,13 @@ Scene* HelloWorld::createScene()
 {
     // 'scene' is an autorelease object
     auto scene = Scene::create();
-    
+
     // 'layer' is an autorelease object
     auto layer = HelloWorld::create();
-    
+
     // add layer as a child to scene
     scene->addChild(layer);
-    
+
     // return the scene
     return scene;
 }
@@ -95,10 +95,10 @@ bool HelloWorld::init()
     {
         return false;
     }
-    
+
     auto director = Director::getInstance();
     auto size = director->getWinSize();
-    
+
     _luaState.open_libraries();
     _luaState["print"] = [&]() {
         lua_State* L = _luaState.lua_state();
@@ -107,7 +107,7 @@ bool HelloWorld::init()
     _luaState["ImGuiRenderer"] = []() { };
     sol::state_view luaView(_luaState.lua_state());
     sol_ImGui::Init(luaView);
-    
+
     _luaState["cxxfun"] = []() {
         CCLOG("cxxfun");
     };
@@ -118,7 +118,15 @@ bool HelloWorld::init()
     _luaState.script("print('bark bark bark!')");
     CCLOG("> sol2 >");
 
-    auto path = FileUtils::getInstance()->fullPathForFilename("ImGuiTest.lua");
+    std::string name("res/ImGuiTest.lua");
+    auto path = FileUtils::getInstance()->fullPathForFilename(name);
+    
+    // set
+    auto workspace = path;
+    workspace.replace(path.find(name), name.size(), "");
+    FileUtils::getInstance()->setDefaultResourceRootPath(workspace);
+    //
+    
     _luaState.script_file(path);
 
     auto rootNode = Sprite::create("HelloWorld.png");
@@ -130,11 +138,11 @@ bool HelloWorld::init()
         return true;
     };
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, rootNode);
-    
+
     testImGui();
 
     createSpineTest();
-    
+
     testSVG();
 
     return true;
@@ -145,34 +153,34 @@ void HelloWorld::createSpineTest()
     // Load the texture atlas.
     _atlas = spAtlas_createFromFile("spine/spineboy.atlas", 0);
     CCASSERT(_atlas, "Error reading atlas file.");
-    
+
     // This attachment loader configures attachments with data needed for cocos2d-x rendering.
     // Do not dispose the attachment loader until the skeleton data is disposed!
     _attachmentLoader = (spAttachmentLoader*)Cocos2dAttachmentLoader_create(_atlas);
-    
+
     // Load the skeleton data.
     spSkeletonJson* json = spSkeletonJson_createWithLoader(_attachmentLoader);
     json->scale = 0.6f; // Resizes skeleton data to 60% of the size it was in Spine.
     _skeletonData = spSkeletonJson_readSkeletonDataFile(json, "spine/spineboy-ess.json");
     CCASSERT(_skeletonData, json->error ? json->error : "Error reading skeleton data file.");
     spSkeletonJson_dispose(json);
-    
+
     // Setup mix times.
     _stateData = spAnimationStateData_create(_skeletonData);
     spAnimationStateData_setMixByName(_stateData, "walk", "jump", 0.2f);
     spAnimationStateData_setMixByName(_stateData, "jump", "run", 0.2f);
-    
+
     int xMin = _contentSize.width * 0.10f, xMax = _contentSize.width * 0.90f;
     int yMin = 0, yMax = _contentSize.height * 0.7f;
     for (int i = 0; i < 50; i++) {
         // Each skeleton node shares the same atlas, skeleton data, and mix times.
         SkeletonAnimation* skeletonNode = SkeletonAnimation::createWithData(_skeletonData, false);
         skeletonNode->setAnimationStateData(_stateData);
-        
+
         skeletonNode->setAnimation(0, "walk", true);
         skeletonNode->addAnimation(0, "jump", false, 3);
         skeletonNode->addAnimation(0, "run", true);
-        
+
         skeletonNode->setPosition(Vec2(
                                        RandomHelper::random_int(xMin, xMax),
                                        RandomHelper::random_int(yMin, yMax)
@@ -196,10 +204,10 @@ void HelloWorld::testImGui()
             if (ImGui::Button("Another Window")) show_another_window ^= 1;
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
-            // ÖÐÎÄÊäÈë·¨²âÊÔ
+            //
             if (CCIMGUI::getInstance()->chineseFont)
                 ImGui::PushFont(CCIMGUI::getInstance()->chineseFont);
-            static char buf[32] = u8"Hello£¬ÊÀ½ç£¡";
+            static char buf[32] = "Helloï¼Œä¸–ç•Œ";
             ImGui::InputText("string", buf, IM_ARRAYSIZE(buf));
             if (CCIMGUI::getInstance()->chineseFont)
                 ImGui::PopFont();
@@ -234,13 +242,13 @@ void HelloWorld::testSVG()
     auto svgSprite = SVGSprite::create("res/tiger.svg");
     svgSprite->setPosition(getContentSize() / 2);
     addChild(svgSprite);
-    
+
 
     auto duration = 5.0f;
     auto moveSeq = Sequence::createWithTwoActions(MoveBy::create(duration, Vec2(200,200)),
                                                 MoveBy::create(duration, Vec2(-200,-200)));
     svgSprite->runAction(RepeatForever::create(moveSeq));
-    
+
     auto scaleSeq = Sequence::createWithTwoActions(ScaleTo::create(duration, 3),
                                                    ScaleTo::create(duration, 0.5));
     svgSprite->runAction(RepeatForever::create(scaleSeq));
