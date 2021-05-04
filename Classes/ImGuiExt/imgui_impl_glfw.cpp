@@ -100,6 +100,23 @@ static void ImGui_ImplGlfw_UpdateMonitors();
 static void ImGui_ImplGlfw_InitPlatformInterface();
 static void ImGui_ImplGlfw_ShutdownPlatformInterface();
 
+#if __APPLE__
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern void glfwSetIMEPos(int x, int y);
+#ifdef __cplusplus
+}
+#endif
+
+// set IME global position
+static void ImGui_ImplMac_SetImeInputPos(ImGuiViewport* viewport, ImVec2 pos)
+{
+    CGSize frame = [[NSScreen mainScreen] frame].size;
+    glfwSetIMEPos(pos.x, frame.height - pos.y - ImGui::GetFontSize());
+}
+#endif // #if __APPLE__
+
 static const char* ImGui_ImplGlfw_GetClipboardText(void* user_data)
 {
     return glfwGetClipboardString((GLFWwindow*)user_data);
@@ -861,7 +878,11 @@ static void ImGui_ImplGlfw_InitPlatformInterface()
 #if HAS_WIN32_IME
     platform_io.Platform_SetImeInputPos = ImGui_ImplWin32_SetImeInputPos;
 #endif
-
+    
+#if __APPLE__
+    platform_io.Platform_SetImeInputPos = ImGui_ImplMac_SetImeInputPos;
+#endif // #if __APPLE__
+    
     // Register main window handle (which is owned by the main application, not by us)
     // This is mostly for simplicity and consistency, so that our code (e.g. mouse handling etc.) can use same logic for main and secondary viewports.
     ImGuiViewport* main_viewport = ImGui::GetMainViewport();

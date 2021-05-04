@@ -149,7 +149,7 @@
 		842EC5FC2612F69D00A2F118 /* imgui_impl_glfw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imgui_impl_glfw.h; sourceTree = "<group>"; };
 		842EC5FD2612F69D00A2F118 /* CCIMGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCIMGUI.cpp; sourceTree = "<group>"; };
 		842EC5FE2612F69D00A2F118 /* CCImGuiLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCImGuiLayer.cpp; sourceTree = "<group>"; };
-		842EC5FF2612F69D00A2F118 /* imgui_impl_glfw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_impl_glfw.cpp; sourceTree = "<group>"; };
+		842EC5FF2612F69D00A2F118 /* imgui_impl_glfw.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = imgui_impl_glfw.cpp; sourceTree = "<group>"; };
 		84791724261033A0001E992A /* libluajit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libluajit.a; path = ../cocos2d/external/luajit/prebuilt/mac/libluajit.a; sourceTree = "<group>"; };
 		84CE9B812504A6F2001E7BB1 /* SVGSpritePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SVGSpritePath.cpp; sourceTree = "<group>"; };
 		84CE9B822504A6F2001E7BB1 /* SVGSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGSprite.h; sourceTree = "<group>"; };
